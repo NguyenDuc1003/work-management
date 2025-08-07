@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
+import { hasPermission } from "../services/authService"
 import {
   Building2,
   Users,
@@ -66,7 +67,8 @@ export function Sidebar({
     { id: "chat", label: "Chat", icon: MessageCircle, path: "/app/chat" },
     { id: "employees", label: "Nhân viên", icon: Users, path: "/app/employees" },
     { id: "departments", label: "Phòng ban", icon: Building2, path: "/app/departments" },
-    { id: "role-permission", label: "Phân quyền", icon: Shield, path: "/app/role-permission" },
+    ...(hasPermission("PHANQUYEN") ? [{ id: "role-permission", label: "Phân quyền", icon: Shield, path: "/app/role-permission" }] : []),
+    
     { id: "settings", label: "Cài đặt", icon: Settings, path: "/app/settings" },
   ]
 

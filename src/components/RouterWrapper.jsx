@@ -10,7 +10,11 @@ import ChatRoom from './chat-room'
 import TaskBoardNew from './TaskBoardNew'
 import LoginPage from '../pages/LoginPage.jsx'
 import RegisterPage from '../pages/RegisterPage'
+import UnauthorizedPage from '../pages/UnauthorizedPage'
 import RolePermissionMatrix from './RolePermissionMatrix'
+import ProtectedRoute from './ProtectedRoute'
+import PublicRoute from './PublicRoute'
+import RoleProtectedRoute from './RoleProtectedRoute'
 
 
 const router = createBrowserRouter([
@@ -20,16 +24,28 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <LoginPage />
+    element: (
+      <PublicRoute>
+        <LoginPage />
+      </PublicRoute>
+    )
   },
   {
     path: "/register",
-    element: <RegisterPage />
+    element: (
+      <PublicRoute>
+        <RegisterPage />
+      </PublicRoute>
+    )
   },
   
   {
     path: "/app",
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -41,15 +57,27 @@ const router = createBrowserRouter([
       },
       {
         path: "employees",
-        element: <EmployeeManagement />
+        element: (
+          <RoleProtectedRoute requiredPermission="USER_MANAGEMENT">
+            <EmployeeManagement />
+          </RoleProtectedRoute>
+        )
       },
       {
         path: "departments", 
-        element: <DepartmentManagement />
+        element: (
+          <RoleProtectedRoute requiredPermission="DEPARTMENT_MANAGEMENT">
+            <DepartmentManagement />
+          </RoleProtectedRoute>
+        )
       },
       {
         path: "projects",
-        element: <ProjectManagement />
+        element: (
+          <RoleProtectedRoute requiredPermission="PROJECT_MANAGEMENT">
+            <ProjectManagement />
+          </RoleProtectedRoute>
+        )
       },
       {
         path: "personal",
@@ -69,9 +97,17 @@ const router = createBrowserRouter([
       },
       {
         path: "role-permission",
-        element: <RolePermissionMatrix />
+        element: (
+          <RoleProtectedRoute requiredPermission="ROLE_MANAGEMENT">
+            <RolePermissionMatrix />
+          </RoleProtectedRoute>
+        )
       }
     ]
+  },
+  {
+    path: "/unauthorized",
+    element: <UnauthorizedPage />
   }
 ], {
   future: {

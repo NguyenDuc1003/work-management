@@ -36,4 +36,6 @@ export const hasPermission = (perm) => {
 export const logout = () => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  // Redirect về trang login
+  window.location.href = '/login';
 };

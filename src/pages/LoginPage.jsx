@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { login, getUserInfo } from '../api/authApi'
 import { saveToken, saveUser } from "../services/authService"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { FaUser, FaLock, FaEye, FaEyeSlash, FaSpinner, FaGoogle, FaFacebook, FaGithub } from "react-icons/fa"
 import { HiSparkles } from "react-icons/hi"
 
@@ -15,6 +15,10 @@ const LoginPage = () => {
   const [focusedField, setFocusedField] = useState("")
   const [isAnimated, setIsAnimated] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // Lấy đường dẫn người dùng muốn truy cập trước khi bị redirect
+  const from = location.state?.from?.pathname || "/app/tasks"
 
   useEffect(() => {
     setIsAnimated(true)
@@ -34,7 +38,8 @@ const LoginPage = () => {
       const userRes = await getUserInfo(form.userName, token)
       saveUser(userRes.data)
 
-      navigate("/app/tasks")
+      // Redirect về trang người dùng muốn truy cập hoặc default là tasks
+      navigate(from, { replace: true })
     } catch (err) {
       setError("❌ Sai tài khoản hoặc mật khẩu.")
     } finally {
