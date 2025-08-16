@@ -1,43 +1,38 @@
-import { Component } from 'react'
+// ErrorBoundary.jsx
+import React from 'react';
 
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props)
-    this.state = { hasError: false, error: null }
-  }
+class ErrorBoundary extends React.Component {
+  state = { hasError: false, error: null };
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, error }
+    return { hasError: true, error };
   }
 
-  componentDidCatch(error, errorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
+  componentDidCatch(error) {
+    console.error('ErrorBoundary caught:', error);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center min-h-screen bg-red-100">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-red-600 mb-2">
-              Có lỗi xảy ra
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Đã xảy ra lỗi khi tải trang. Vui lòng thử lại.
+            <h1 className="text-2xl font-bold text-red-600">Đã xảy ra lỗi</h1>
+            <p className="mt-2 text-gray-700">
+              Có thể do công cụ dịch tự động (Google Translate). Vui lòng tắt dịch trong trình duyệt và tải lại trang.
             </p>
             <button
-              onClick={() => this.setState({ hasError: false, error: null })}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
             >
-              Thử lại
+              Tải lại
             </button>
           </div>
         </div>
-      )
+      );
     }
-
-    return this.props.children
+    return this.props.children;
   }
 }
 
-export default ErrorBoundary
+export default ErrorBoundary;

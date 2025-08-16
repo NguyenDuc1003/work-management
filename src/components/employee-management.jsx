@@ -1,6 +1,6 @@
 
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Search, Filter, MoreHorizontal, Mail, Phone, MapPin } from "lucide-react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"

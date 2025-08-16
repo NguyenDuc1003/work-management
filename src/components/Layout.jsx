@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from './sidebar'
 import { Header } from './header'
-import { PageTransition } from './PageTransition'
+// import { PageTransition } from './PageTransition'
 
 export default function Layout() {
   const [selectedDepartment, setSelectedDepartment] = useState("all")
@@ -24,14 +24,12 @@ export default function Layout() {
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 overflow-auto">
-          <PageTransition>
-            <Outlet context={{
-              selectedDepartment,
-              setSelectedDepartment,
-              selectedTeam,
-              setSelectedTeam
-            }} />
-          </PageTransition>
+          <Outlet context={{
+            selectedDepartment,
+            setSelectedDepartment,
+            selectedTeam,
+            setSelectedTeam
+          }} />
         </main>
       </div>
     </div>

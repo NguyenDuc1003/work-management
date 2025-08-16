@@ -5,7 +5,7 @@ import RouterWrapper from './components/RouterWrapper.jsx'
 import { ThemeProvider } from './components/theme-provider'
 import ErrorBoundary from './components/ErrorBoundary'
 import './globals.css'
-
+import './dom-patch.js'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
