@@ -54,7 +54,7 @@ const CreatePermissionModal = ({ modules, onClose, onSubmit }) => {
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Create New Permission</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Thêm quyền mới cho người dùng</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600" aria-label="Close modal">
             <svg
               className="w-6 h-6"
@@ -73,7 +73,7 @@ const CreatePermissionModal = ({ modules, onClose, onSubmit }) => {
           {/* Permission Code */}
           <div className="mb-4">
             <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-2">
-              Permission Code *
+              Mã quyền *
             </label>
             <input
               type="text"
@@ -81,10 +81,9 @@ const CreatePermissionModal = ({ modules, onClose, onSubmit }) => {
               name="code"
               value={formData.code}
               onChange={handleChange}
-              placeholder="e.g., USER_CREATE"
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.code ? "border-red-500" : "border-gray-300"
-              }`}
+              placeholder="nhập mã quyền..."
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.code ? "border-red-500" : "border-gray-300"
+                }`}
               aria-invalid={!!errors.code}
               aria-describedby="code-error"
             />
@@ -98,7 +97,7 @@ const CreatePermissionModal = ({ modules, onClose, onSubmit }) => {
           {/* Description */}
           <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-              Description *
+              Mô tả *
             </label>
             <input
               type="text"
@@ -106,10 +105,9 @@ const CreatePermissionModal = ({ modules, onClose, onSubmit }) => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              placeholder="e.g., Create User"
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.description ? "border-red-500" : "border-gray-300"
-              }`}
+              placeholder="nhập mô tả..."
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.description ? "border-red-500" : "border-gray-300"
+                }`}
               aria-invalid={!!errors.description}
               aria-describedby="description-error"
             />
@@ -126,21 +124,20 @@ const CreatePermissionModal = ({ modules, onClose, onSubmit }) => {
               Module *
             </label>
             <select
-  id="moduleId"
-  name="moduleId"
-  value={formData.moduleId}
-  onChange={handleChange}
-  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-    errors.moduleId ? "border-red-500" : "border-gray-300"
-  }`}
->
-  <option value="">Select a module</option>
-  {modules.map((module) => (
-    <option key={module.id} value={module.id}>
-      {module.name}
-    </option>
-  ))}
-</select>
+              id="moduleId"
+              name="moduleId"
+              value={formData.moduleId}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.moduleId ? "border-red-500" : "border-gray-300"
+                }`}
+            >
+              <option value="">Chọn module</option>
+              {modules.map((module) => (
+                <option key={module.id} value={module.id}>
+                  {module.name}
+                </option>
+              ))}
+            </select>
 
 
             {errors.moduleId && (
@@ -153,36 +150,25 @@ const CreatePermissionModal = ({ modules, onClose, onSubmit }) => {
           {/* Permission Type */}
           <div className="mb-4">
             <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
-              Permission Type *
+              Kiểu quyền *
             </label>
             <select
               id="type"
               name="type"
               value={formData.type}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.type ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.type ? "border-red-500" : "border-gray-300"
+                }`}
               aria-invalid={!!errors.type}
               aria-describedby="type-error"
             >
               <option value="">Select type</option>
-              <option value="VIEW_BOARDS">VIEW_BOARDS</option>
-              <option value="CREATE_BOARDS">CREATE_BOARDS</option>
-              <option value="UPDATE_BOARDS">UPDATE_BOARDS</option>
-              <option value="DELETE_BOARDS">DELETE_BOARDS</option>
-              <option value="VIEW_GROUPS">VIEW_GROUPS</option>
-              <option value="ADD_GROUPS">ADD_GROUPS</option>
-              <option value="UPDATE_GROUPS">UPDATE_GROUPS</option>
-              <option value="DELETE_GROUPS">DELETE_GROUPS</option>
-              <option value="VIEW_TASKS">VIEW_TASKS</option>
-              <option value="ADD_TASKS">ADD_TASKS</option>
-              <option value="UPDATE_TASKS">UPDATE_TASKS</option>
-              <option value="DELETE_TASKS">DELETE_TASKS</option>
+              
               <option value="CREATE">CREATE</option>
               <option value="READ">READ</option>
               <option value="UPDATE">UPDATE</option>
               <option value="DELETE">DELETE</option>
+              <option value="VIEW">VIEW</option>
             </select>
             {errors.type && (
               <p id="type-error" className="text-red-500 text-sm mt-1">
@@ -204,7 +190,7 @@ const CreatePermissionModal = ({ modules, onClose, onSubmit }) => {
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Create Permission
+             Tạo quyền
             </button>
           </div>
         </form>

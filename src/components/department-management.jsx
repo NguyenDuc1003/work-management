@@ -1,7 +1,8 @@
 
 
 import { useState } from "react"
-import { Plus, MoreHorizontal, Building2 } from "lucide-react"
+import { Plus, MoreHorizontal, Building2, Eye } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Badge } from "./ui/badge"
@@ -15,6 +16,7 @@ import { Progress } from "./ui/progress"
 import { withLoading } from "./LoadingWrapper"
 
 function DepartmentManagementBase() {
+  const navigate = useNavigate()
   const [newDepartmentDialog, setNewDepartmentDialog] = useState(false)
   const [newTeamDialog, setNewTeamDialog] = useState(false)
 
@@ -164,7 +166,10 @@ function DepartmentManagementBase() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate(`/app/departments/${dept.id}`)}>
+                      <Eye className="w-4 h-4 mr-2" />
+                      Xem chi tiết
+                    </DropdownMenuItem>
                     <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
                     <DropdownMenuItem>Thêm nhóm</DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
@@ -220,6 +225,17 @@ function DepartmentManagementBase() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="pt-4">
+                <Button 
+                  onClick={() => navigate(`/app/departments/${dept.id}`)}
+                  className="w-full"
+                  variant="outline"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Xem chi tiết phòng ban
+                </Button>
               </div>
             </CardContent>
           </Card>

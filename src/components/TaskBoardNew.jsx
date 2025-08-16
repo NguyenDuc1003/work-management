@@ -33,6 +33,12 @@ const TaskBoardNew = () => {
   const [groups, setGroups] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  // Add board management states
+  const [showBoardDropdown, setShowBoardDropdown] = useState(false)
+  const [editingBoardId, setEditingBoardId] = useState(null)
+  const [editingBoardName, setEditingBoardName] = useState("")
+  const [showCreateBoard, setShowCreateBoard] = useState(false)
+  const [newBoardName, setNewBoardName] = useState("")
 
   const statusOptions = [
     { value: "todo", label: "Todo", bg: "bg-gray-500", icon: "⚪" },
@@ -371,6 +377,91 @@ const TaskBoardNew = () => {
     }))
   }
 
+  // Board management functions
+  const handleBoardSwitch = (boardId) => {
+    setSelectedBoard(boardId)
+    setShowBoardDropdown(false)
+  }
+
+  const handleCreateBoard = async () => {
+    if (!newBoardName.trim()) return
+    
+    try {
+      const res = await createBoard({ boardName: newBoardName.trim() })
+      const newBoard = {
+        id: res.data.boardId.toString(),
+        name: res.data.boardName,
+        active: false
+      }
+      
+      setWorkspaces(prevWorkspaces => 
+        prevWorkspaces.map(workspace => 
+          workspace.id === "1" 
+            ? { ...workspace, boards: [...workspace.boards, newBoard] }
+            : workspace
+        )
+      )
+      
+      setNewBoardName("")
+      setShowCreateBoard(false)
+      setSelectedBoard(newBoard.id)
+    } catch (error) {
+      console.error("Lỗi tạo board:", error)
+      setError("Không thể tạo board mới. Vui lòng thử lại.")
+    }
+  }
+
+  const handleUpdateBoard = async (boardId, newName) => {
+    if (!newName.trim()) return
+    
+    try {
+      await updateBoard(boardId, { boardName: newName.trim() })
+      
+      setWorkspaces(prevWorkspaces => 
+        prevWorkspaces.map(workspace => ({
+          ...workspace,
+          boards: workspace.boards.map(board => 
+            board.id === boardId 
+              ? { ...board, name: newName.trim() }
+              : board
+          )
+        }))
+      )
+      
+      setEditingBoardId(null)
+      setEditingBoardName("")
+    } catch (error) {
+      console.error("Lỗi cập nhật board:", error)
+      setError("Không thể cập nhật board. Vui lòng thử lại.")
+    }
+  }
+
+  const handleDeleteBoard = async (boardId) => {
+    if (!window.confirm("Bạn có chắc muốn xóa board này?")) return
+    
+    try {
+      await deleteBoard(boardId)
+      
+      setWorkspaces(prevWorkspaces => 
+        prevWorkspaces.map(workspace => ({
+          ...workspace,
+          boards: workspace.boards.filter(board => board.id !== boardId)
+        }))
+      )
+      
+      // Switch to first available board or null
+      const remainingBoards = workspaces[0]?.boards.filter(b => b.id !== boardId) || []
+      if (remainingBoards.length > 0 && selectedBoard === boardId) {
+        setSelectedBoard(remainingBoards[0].id)
+      } else if (remainingBoards.length === 0) {
+        setSelectedBoard(null)
+      }
+    } catch (error) {
+      console.error("Lỗi xóa board:", error)
+      setError("Không thể xóa board. Vui lòng thử lại.")
+    }
+  }
+
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
 
@@ -393,10 +484,136 @@ const TaskBoardNew = () => {
                 <div className="mb-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h1 className="text-2xl font-bold text-gray-900">{getCurrentBoard()?.name || "Board"}</h1>
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <DropdownMenu open={showBoardDropdown} onOpenChange={setShowBoardDropdown}>
+                        <DropdownMenuTrigger className="flex items-center gap-2 hover:bg-gray-100 rounded-lg px-3 py-2 transition-colors">
+                          <h1 className="text-2xl font-bold text-gray-900">{getCurrentBoard()?.name || "Board"}</h1>
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-64">
+                          <div className="p-2 text-sm font-medium text-gray-700 border-b">Chọn Board</div>
+                          
+                          {/* List of boards */}
+                          {getCurrentWorkspace()?.boards?.map((board) => (
+                            <DropdownMenuItem
+                              key={board.id} 
+                              onClick={() => handleBoardSwitch(board.id)}
+                              className={`flex items-center justify-between p-2 ${
+                                selectedBoard === board.id ? "bg-blue-50 text-blue-600" : ""
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                {editingBoardId === board.id ? (
+                                  <input
+                                    type="text"
+                                    value={editingBoardName}
+                                    onChange={(e) => setEditingBoardName(e.target.value)}
+                                    onBlur={() => handleUpdateBoard(board.id, editingBoardName)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        handleUpdateBoard(board.id, editingBoardName)
+                                      } else if (e.key === "Escape") {
+                                        setEditingBoardId(null)
+                                        setEditingBoardName("")
+                                      }
+                                    }}
+                                    autoFocus
+                                    className="flex-1 px-2 py-1 text-sm border rounded"
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                ) : (
+                                  <>
+                                    <span className="font-medium">{board.name}</span>
+                                    {selectedBoard === board.id && (
+                                      <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                              
+                              {editingBoardId !== board.id && (
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setEditingBoardId(board.id)
+                                      setEditingBoardName(board.name)
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleDeleteBoard(board.id)
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-red-600 rounded"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              )}
+                            </DropdownMenuItem>
+                          ))}
+                          
+                          <DropdownMenuSeparator />
+                          
+                          {/* Create new board */}
+                          {showCreateBoard ? (
+                            <div className="p-2">
+                              <input
+                                type="text"
+                                placeholder="Tên board mới..."
+                                value={newBoardName}
+                                onChange={(e) => setNewBoardName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    handleCreateBoard()
+                                  } else if (e.key === "Escape") {
+                                    setShowCreateBoard(false)
+                                    setNewBoardName("")
+                                  }
+                                }}
+                                autoFocus
+                                className="w-full px-3 py-2 text-sm border rounded-lg"
+                              />
+                              <div className="flex gap-2 mt-2">
+                                <button
+                                  onClick={handleCreateBoard}
+                                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                >
+                                  Tạo
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setShowCreateBoard(false)
+                                    setNewBoardName("")
+                                  }}
+                                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                                >
+                                  Hủy
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <DropdownMenuItem
+                              onClick={() => setShowCreateBoard(true)}
+                              className="flex items-center gap-2 p-2 text-blue-600"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                              Tạo board mới
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
 
                     <div className="flex items-center gap-2">

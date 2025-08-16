@@ -122,7 +122,7 @@ const TaskGroup = ({
                 <th className="p-3 text-left text-sm font-medium text-gray-700 w-32">Due date</th>
                 <th className="p-3 text-left text-sm font-medium text-gray-700 w-40">Timeline</th>
                 <th className="p-3 text-left text-sm font-medium text-gray-700">Notes</th>
-                <th className="w-16 p-3"></th>
+                <th className="w-20 p-3 text-center text-sm font-medium text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>

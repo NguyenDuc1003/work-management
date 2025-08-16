@@ -20,7 +20,7 @@ const UnauthorizedPage = () => {
         {/* Description */}
         <p className="text-white/80 mb-8 leading-relaxed">
           Bạn không có quyền truy cập vào trang này. Vui lòng liên hệ quản trị viên 
-          để được cấp quyền phù hợp.
+          để được cấp quyền phù hợp.hoặc liên hệ tới email Ducmvb@gmail.com
         </p>
 
         {/* Action buttons */}

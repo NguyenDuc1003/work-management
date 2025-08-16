@@ -6,6 +6,7 @@ import Layout from './components/Layout'
 import TaskBoard from './components/task-board'
 import EmployeeManagement from './components/employee-management'
 import DepartmentManagement from './components/department-management'
+import DepartmentDetail from './components/DepartmentDetail'
 import ProjectManagement from './components/project-management'
 import Settings from './components/settings'
 import PersonalTasks from './components/personal-tasks'
@@ -56,6 +57,13 @@ function App() {
                 <ErrorBoundary>
                   <PageIsolator pageName="Quản lý Phòng ban">
                     <DepartmentManagement />
+                  </PageIsolator>
+                </ErrorBoundary>
+              } />
+              <Route path="departments/:id" element={
+                <ErrorBoundary>
+                  <PageIsolator pageName="Chi tiết Phòng ban">
+                    <DepartmentDetail />
                   </PageIsolator>
                 </ErrorBoundary>
               } />

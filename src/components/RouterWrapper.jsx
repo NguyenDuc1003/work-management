@@ -3,6 +3,7 @@ import Layout from './Layout'
 import TaskBoard from './task-board'
 import EmployeeManagement from './employee-management'
 import DepartmentManagement from './department-management'
+import DepartmentDetail from './DepartmentDetail'
 import ProjectManagement from './project-management'
 import Settings from './settings'
 import PersonalTasks from './personal-tasks'
@@ -72,6 +73,14 @@ const router = createBrowserRouter([
         )
       },
       {
+        path: "departments/:id",
+        element: (
+          <RoleProtectedRoute requiredPermission="DEPARTMENT_MANAGEMENT">
+            <DepartmentDetail />
+          </RoleProtectedRoute>
+        )
+      },
+      {
         path: "projects",
         element: (
           <RoleProtectedRoute requiredPermission="PROJECT_MANAGEMENT">
@@ -98,7 +107,7 @@ const router = createBrowserRouter([
       {
         path: "role-permission",
         element: (
-          <RoleProtectedRoute requiredPermission="ROLE_MANAGEMENT">
+          <RoleProtectedRoute requiredPermission="PHANQUYEN">
             <RolePermissionMatrix />
           </RoleProtectedRoute>
         )
