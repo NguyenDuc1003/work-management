@@ -1,79 +1,25 @@
-
-
-import { useState, useEffect } from "react"
-import { Plus, Search, Filter, MoreHorizontal, Mail, Phone, MapPin } from "lucide-react"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { Label } from "./ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { Search, Filter, MoreHorizontal, Mail, Phone, MapPin } from "lucide-react"
+import { Button } from "../components/ui/button"
+import { Input } from "../components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/ui/dropdown-menu"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
+import { CreateEmployeeDialog } from "../components/create/CreateEmployeeDialog"
 
 export function EmployeeManagement() {
+  const navigate = useNavigate();
+  const [employees, setEmployees] = useState([
+    { id: "1", name: "Nguyễn Văn A", email: "nguyenvana@takeit.com", phone: "0123456789", position: "Frontend Developer", department: "Công nghệ", team: "Frontend", avatar: "/placeholder.svg", status: "active", joinDate: "2023-01-15", tasksCompleted: 24, tasksInProgress: 3 },
+    { id: "2", name: "Trần Thị B", email: "tranthib@takeit.com", phone: "0123456790", position: "Backend Developer", department: "Công nghệ", team: "Backend", avatar: "/placeholder.svg", status: "active", joinDate: "2023-02-20", tasksCompleted: 31, tasksInProgress: 2 },
+    { id: "3", name: "Lê Văn C", email: "levanc@takeit.com", phone: "0123456791", position: "Content Writer", department: "Marketing", team: "Content", avatar: "/placeholder.svg", status: "active", joinDate: "2023-03-10", tasksCompleted: 18, tasksInProgress: 5 },
+    { id: "4", name: "Phạm Thị D", email: "phamthid@takeit.com", phone: "0123456792", position: "Mobile Developer", department: "Công nghệ", team: "Mobile", avatar: "/placeholder.svg", status: "inactive", joinDate: "2023-04-05", tasksCompleted: 12, tasksInProgress: 1 },
+  ])
+
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedDepartment, setSelectedDepartment] = useState("all")
-  const [newEmployeeDialog, setNewEmployeeDialog] = useState(false)
-
-  const employees = [
-    {
-      id: "1",
-      name: "Nguyễn Văn A",
-      email: "nguyenvana@takeit.com",
-      phone: "0123456789",
-      position: "Frontend Developer",
-      department: "Công nghệ",
-      team: "Frontend",
-      avatar: "/placeholder.svg?height=64&width=64",
-      status: "active",
-      joinDate: "2023-01-15",
-      tasksCompleted: 24,
-      tasksInProgress: 3,
-    },
-    {
-      id: "2",
-      name: "Trần Thị B",
-      email: "tranthib@takeit.com",
-      phone: "0123456790",
-      position: "Backend Developer",
-      department: "Công nghệ",
-      team: "Backend",
-      avatar: "/placeholder.svg?height=64&width=64",
-      status: "active",
-      joinDate: "2023-02-20",
-      tasksCompleted: 31,
-      tasksInProgress: 2,
-    },
-    {
-      id: "3",
-      name: "Lê Văn C",
-      email: "levanc@takeit.com",
-      phone: "0123456791",
-      position: "Content Writer",
-      department: "Marketing",
-      team: "Content",
-      avatar: "/placeholder.svg?height=64&width=64",
-      status: "active",
-      joinDate: "2023-03-10",
-      tasksCompleted: 18,
-      tasksInProgress: 5,
-    },
-    {
-      id: "4",
-      name: "Phạm Thị D",
-      email: "phamthid@takeit.com",
-      phone: "0123456792",
-      position: "Mobile Developer",
-      department: "Công nghệ",
-      team: "Mobile",
-      avatar: "/placeholder.svg?height=64&width=64",
-      status: "inactive",
-      joinDate: "2023-04-05",
-      tasksCompleted: 12,
-      tasksInProgress: 1,
-    },
-  ]
 
   const filteredEmployees = employees.filter((employee) => {
     const matchesSearch =
@@ -84,88 +30,30 @@ export function EmployeeManagement() {
     return matchesSearch && matchesDepartment
   })
 
-  const getStatusColor = (status) => {
-    return status === "active" ? "bg-green-500" : "bg-gray-500"
+  const getStatusColor = (status) => (status === "active" ? "bg-green-500" : "bg-gray-500")
+  const getStatusText = (status) => (status === "active" ? "Đang làm việc" : "Nghỉ việc")
+
+  const handleAddEmployee = (employee) => {
+    setEmployees([employee, ...employees])
   }
 
-  const getStatusText = (status) => {
-    return status === "active" ? "Đang làm việc" : "Nghỉ việc"
-  }
+  const handleViewDetail = (employee) => {
+    // Chuyển sang trang chi tiết user, truyền dữ liệu qua state
+    navigate(`/app/employees/${employee.id}`, { state: { user: employee } });
+  };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Quản lý nhân viên</h1>
           <p className="text-muted-foreground">Quản lý thông tin và công việc của nhân viên</p>
         </div>
-        <Dialog open={newEmployeeDialog} onOpenChange={setNewEmployeeDialog}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Thêm nhân viên
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Thêm nhân viên mới</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Họ và tên</Label>
-                <Input id="name" placeholder="Nhập họ và tên" />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="Nhập email" />
-              </div>
-              <div>
-                <Label htmlFor="phone">Số điện thoại</Label>
-                <Input id="phone" placeholder="Nhập số điện thoại" />
-              </div>
-              <div>
-                <Label htmlFor="position">Vị trí</Label>
-                <Input id="position" placeholder="Nhập vị trí công việc" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="department">Phòng ban</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn phòng ban" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="tech">Công nghệ</SelectItem>
-                      <SelectItem value="marketing">Marketing</SelectItem>
-                      <SelectItem value="sales">Kinh doanh</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="team">Nhóm</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn nhóm" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="frontend">Frontend</SelectItem>
-                      <SelectItem value="backend">Backend</SelectItem>
-                      <SelectItem value="mobile">Mobile</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setNewEmployeeDialog(false)}>
-                  Hủy
-                </Button>
-                <Button onClick={() => setNewEmployeeDialog(false)}>Thêm nhân viên</Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <CreateEmployeeDialog onAdd={handleAddEmployee} />
       </div>
 
+      {/* Search & Filter */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -188,11 +76,11 @@ export function EmployeeManagement() {
           </SelectContent>
         </Select>
         <Button variant="outline">
-          <Filter className="w-4 h-4 mr-2" />
-          Bộ lọc
+          <Filter className="w-4 h-4 mr-2" /> Bộ lọc
         </Button>
       </div>
 
+      {/* Employee Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredEmployees.map((employee) => (
           <Card key={employee.id} className="hover:shadow-lg transition-shadow">
@@ -215,7 +103,9 @@ export function EmployeeManagement() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleViewDetail(employee)}>
+                      Xem chi tiết
+                    </DropdownMenuItem>
                     <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
                     <DropdownMenuItem>Giao công việc</DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>

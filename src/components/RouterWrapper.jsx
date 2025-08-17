@@ -13,6 +13,7 @@ import LoginPage from '../pages/LoginPage.jsx'
 import RegisterPage from '../pages/RegisterPage'
 import UnauthorizedPage from '../pages/UnauthorizedPage'
 import RolePermissionMatrix from './RolePermissionMatrix'
+import UserDetailPage from '../pages/UserDetailPage.jsx'
 import ProtectedRoute from './ProtectedRoute'
 import PublicRoute from './PublicRoute'
 import RoleProtectedRoute from './RoleProtectedRoute'
@@ -61,6 +62,14 @@ const router = createBrowserRouter([
         element: (
           <RoleProtectedRoute requiredPermission="USER_MANAGEMENT">
             <EmployeeManagement />
+          </RoleProtectedRoute>
+        )
+      },
+      {
+        path: "employees/:id",
+        element: (
+          <RoleProtectedRoute requiredPermission="USER_MANAGEMENT">
+            <UserDetailPage />
           </RoleProtectedRoute>
         )
       },
