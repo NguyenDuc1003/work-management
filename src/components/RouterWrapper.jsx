@@ -17,6 +17,7 @@ import UserDetailPage from '../pages/UserDetailPage.jsx'
 import ProtectedRoute from './ProtectedRoute'
 import PublicRoute from './PublicRoute'
 import RoleProtectedRoute from './RoleProtectedRoute'
+import KanbanPage from '../components/ProjectDetail.jsx' // <- đường dẫn đúng với file của bạn
 
 
 const router = createBrowserRouter([
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <Settings />
+      },
+      {
+        path: "kanban",
+        element: <KanbanPage/>
       },
       {
         path: "role-permission",

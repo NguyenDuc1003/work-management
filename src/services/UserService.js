@@ -1,8 +1,10 @@
+
 import {
   registerUser,
   loginUser,
   getUserInfo,
-  updateUser
+  updateUser,
+  getAllUsers
 } from "../api/userApi";
 
 export const UserService = {
@@ -31,3 +33,22 @@ export const UserService = {
     return response.data;
   },
 };
+
+export const getAllUser = async() =>{
+  try{
+    const response = await getAllUsers();
+    return response.data;
+  }catch(error){
+    console.error("Failed to fetch all users:", error);
+    throw error;
+  }
+}
+export const getUserName = async (userName) =>{
+  try{
+    const response = await getUserInfo(userName);
+    return response.data;
+  }
+  catch{
+    return null;
+  }
+}

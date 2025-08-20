@@ -23,6 +23,7 @@ function DepartmentManagementBase() {
   useEffect(() => {
     fetchDepartment();
   }, []);
+  
  const fetchDepartment = async ()=>{
   try{
     const data = await getAllDepartments();

@@ -1,8 +1,9 @@
 
 
 import { useState } from "react"
-import { Plus, Calendar, BarChart3, CheckCircle2 } from "lucide-react"
+import { Plus, Calendar, BarChart3, CheckCircle2, MoreHorizontal } from "lucide-react"
 import { Button } from "./ui/button"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Badge } from "./ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
@@ -14,7 +15,6 @@ import { Label } from "./ui/label"
 import { Textarea } from "./ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { withLoading } from "./LoadingWrapper"
-
 function ProjectManagementBase() {
   const [newProjectDialog, setNewProjectDialog] = useState(false)
 
@@ -229,14 +229,64 @@ function ProjectManagementBase() {
         <TabsContent value="all" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {projects.map((project) => (
-              <Card key={project.id} className="hover:shadow-lg transition-shadow">
+              <Card key={project.id} className="hover:shadow-lg transition-shadow group relative">
                 <CardHeader>
+                  {/* DropdownMenu ba chấm ở góc trên phải, chỉ hiện khi hover card */}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem  onClick={() => navigate(`/app/kaban`)}>
+                          Xem chi tiết
+                          
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setSelectedProject(project); setEditDialog(true); }}>
+                          Chỉnh sửa
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Giao công việc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedProject(project); setDeleteDialog(true); }}>
+                          Xóa
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <CardTitle className="text-lg">{project.name}</CardTitle>
                       <p className="text-sm text-muted-foreground">{project.description}</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    {/* DropdownMenu ba chấm ở góc trên phải ngoài cùng */}
+                    <div className="absolute top-3 right-3 z-10">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => { setSelectedProject(project); setShowKanban(true); }}>
+                            Xem chi tiết
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => { setSelectedProject(project); setEditDialog(true); }}>
+                            Chỉnh sửa
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            Giao công việc
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedProject(project); setDeleteDialog(true); }}>
+                            Xóa
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    {/* Badge trạng thái chuyển xuống dưới, không bị đè */}
+                    <div className="flex items-center gap-2 mt-6">
                       <div className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`} />
                       <Badge variant="outline" className={getPriorityColor(project.priority)}>
                         {getPriorityText(project.priority)}

@@ -1,6 +1,6 @@
 "use client"
-
-import { useState } from "react"
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge"
 import { Button } from "../components/ui/button"
@@ -10,6 +10,7 @@ import { Progress } from "../components/ui/progress"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Textarea } from "../components/ui/textarea"
+import {getUserName} from "../services/UserService";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog"
 import {
@@ -36,250 +37,6 @@ import {
   Plus,
 } from "lucide-react"
 
-// Mock employee data based on the JSON structure
-const employeeData = {
-  id: 13,
-  userName: "johndoe",
-  email: "johndoe@example.com",
-  avatar: "/professional-headshot.png",
-  telephone: "0987654321",
-  position: "Developer",
-  bio: "Lập trình viên backend",
-  address: "123 Nguyễn Văn Linh, Hà Nội",
-  fullName: "John Doe",
-  status: "ACTIVE",
-  firstName: "John",
-  lastName: "Doe",
-  updatedAt: "2025-08-17T20:25:54",
-  departmentId: 1,
-  departmentName: "Phòng Kinh Doanh",
-  userTeam: [
-    {
-      id: 1,
-      teamName: "Backend",
-    },
-    {
-      id: 2,
-      teamName: "Backend-Frontend",
-    },
-  ],
-  calendarEvents: [
-    { id: 1, title: "Hoạt động - Thời gian", category: "activity", color: "bg-purple-500", date: "2022-04-01" },
-    { id: 2, title: "Công việc - Ngày giờ tổ chức", category: "work", color: "bg-orange-500", date: "2022-04-02" },
-    { id: 3, title: "Cá hội - Ngày chốt dự án", category: "opportunity", color: "bg-blue-500", date: "2022-04-03" },
-    { id: 4, title: "Người liên hệ", category: "contact", color: "bg-red-500", date: "2022-04-04" },
-    {
-      id: 5,
-      title: "Người liên hệ - Ngày sinh",
-      category: "contact-birthday",
-      color: "bg-green-500",
-      date: "2022-04-05",
-    },
-    { id: 6, title: "Hóa đơn - Ngày thu đủ", category: "invoice", color: "bg-pink-500", date: "2022-04-06" },
-    {
-      id: 7,
-      title: "Tác vụ dự án - Ngày bắt đầu",
-      category: "project-task",
-      color: "bg-emerald-600",
-      date: "2022-04-07",
-    },
-    { id: 8, title: "Hợp đồng - Ngày hết hạn", category: "contract", color: "bg-yellow-500", date: "2022-04-08" },
-    { id: 9, title: "Lê Xuân Nhã", name: "Lê Xuân Nhã", category: "person", color: "bg-green-400", date: "2022-04-04" },
-    {
-      id: 10,
-      title: "Nguyễn Tiến Trung",
-      name: "Nguyễn Tiến Trung",
-      category: "person",
-      color: "bg-green-400",
-      date: "2022-04-05",
-    },
-    {
-      id: 11,
-      title: "Nguyễn Thị Bích Thủy",
-      name: "Nguyễn Thị Bích Thủy",
-      category: "person",
-      color: "bg-green-400",
-      date: "2022-04-06",
-    },
-    {
-      id: 12,
-      title: "Shi Thi Chính",
-      name: "Shi Thi Chính",
-      category: "person",
-      color: "bg-blue-400",
-      date: "2022-04-07",
-    },
-    {
-      id: 13,
-      title: "Nguyễn Thị Hương",
-      name: "Nguyễn Thị Hương",
-      category: "person",
-      color: "bg-green-400",
-      date: "2022-04-08",
-    },
-    {
-      id: 14,
-      title: "Nguyễn Ngọc Phú",
-      name: "Nguyễn Ngọc Phú",
-      category: "person",
-      color: "bg-green-400",
-      date: "2022-04-09",
-    },
-    {
-      id: 15,
-      title: "Trần Quốc Hoàn",
-      name: "Trần Quốc Hoàn",
-      category: "person",
-      color: "bg-green-400",
-      date: "2022-04-10",
-    },
-  ],
-  schedule: [
-    {
-      id: 1,
-      date: "2025-08-18",
-      dayOfWeek: "Thứ 2",
-      shifts: [
-        { startTime: "08:00", endTime: "12:00", type: "morning", status: "scheduled" },
-        { startTime: "13:00", endTime: "17:00", type: "afternoon", status: "scheduled" },
-      ],
-      totalHours: 8,
-      status: "scheduled",
-    },
-    {
-      id: 2,
-      date: "2025-08-19",
-      dayOfWeek: "Thứ 3",
-      shifts: [
-        { startTime: "08:00", endTime: "12:00", type: "morning", status: "completed" },
-        { startTime: "13:00", endTime: "17:00", type: "afternoon", status: "completed" },
-      ],
-      totalHours: 8,
-      status: "completed",
-    },
-    {
-      id: 3,
-      date: "2025-08-20",
-      dayOfWeek: "Thứ 4",
-      shifts: [
-        { startTime: "08:00", endTime: "12:00", type: "morning", status: "completed" },
-        { startTime: "13:00", endTime: "17:00", type: "afternoon", status: "in-progress" },
-      ],
-      totalHours: 8,
-      status: "in-progress",
-    },
-    {
-      id: 4,
-      date: "2025-08-21",
-      dayOfWeek: "Thứ 5",
-      shifts: [
-        { startTime: "08:00", endTime: "12:00", type: "morning", status: "scheduled" },
-        { startTime: "13:00", endTime: "17:00", type: "afternoon", status: "scheduled" },
-      ],
-      totalHours: 8,
-      status: "scheduled",
-    },
-    {
-      id: 5,
-      date: "2025-08-22",
-      dayOfWeek: "Thứ 6",
-      shifts: [
-        { startTime: "08:00", endTime: "12:00", type: "morning", status: "scheduled" },
-        { startTime: "13:00", endTime: "17:00", type: "afternoon", status: "scheduled" },
-      ],
-      totalHours: 8,
-      status: "scheduled",
-    },
-    {
-      id: 6,
-      date: "2025-08-23",
-      dayOfWeek: "Thứ 7",
-      shifts: [],
-      totalHours: 0,
-      status: "off",
-    },
-    {
-      id: 7,
-      date: "2025-08-24",
-      dayOfWeek: "Chủ nhật",
-      shifts: [],
-      totalHours: 0,
-      status: "off",
-    },
-  ],
-  tasks: [
-    {
-      id: 1,
-      title: "API Authentication System",
-      description: "Phát triển hệ thống xác thực API cho ứng dụng mobile",
-      status: "completed",
-      progress: 100,
-      priority: "high",
-      dueDate: "2025-08-15",
-      completedDate: "2025-08-14",
-      estimatedHours: 40,
-      actualHours: 38,
-    },
-    {
-      id: 2,
-      title: "Database Optimization",
-      description: "Tối ưu hóa truy vấn database và cải thiện hiệu suất",
-      status: "in-progress",
-      progress: 75,
-      priority: "medium",
-      dueDate: "2025-08-25",
-      estimatedHours: 32,
-      actualHours: 24,
-    },
-    {
-      id: 3,
-      title: "User Management Module",
-      description: "Xây dựng module quản lý người dùng với đầy đủ CRUD operations",
-      status: "in-progress",
-      progress: 45,
-      priority: "high",
-      dueDate: "2025-09-01",
-      estimatedHours: 50,
-      actualHours: 22,
-    },
-    {
-      id: 4,
-      title: "Code Review & Documentation",
-      description: "Review code và viết tài liệu kỹ thuật cho các module đã hoàn thành",
-      status: "pending",
-      progress: 0,
-      priority: "low",
-      dueDate: "2025-09-10",
-      estimatedHours: 16,
-      actualHours: 0,
-    },
-  ],
-  projects: [
-    {
-      id: 1,
-      name: "E-commerce Platform",
-      description: "Phát triển nền tảng thương mại điện tử",
-      progress: 68,
-      status: "in-progress",
-      startDate: "2025-07-01",
-      endDate: "2025-10-15",
-      tasksCompleted: 15,
-      totalTasks: 22,
-    },
-    {
-      id: 2,
-      name: "Mobile App Backend",
-      description: "Backend API cho ứng dụng mobile",
-      progress: 90,
-      status: "near-completion",
-      startDate: "2025-06-15",
-      endDate: "2025-08-30",
-      tasksCompleted: 18,
-      totalTasks: 20,
-    },
-  ],
-}
-
 const calendarCategories = [
   { id: "activity", name: "Hoạt động - Thời gian", color: "bg-purple-500", checked: true },
   { id: "work", name: "Công việc - Ngày giờ tổ chức", color: "bg-orange-500", checked: true },
@@ -297,17 +54,23 @@ export default function EmployeeDetail() {
   const [calendarView, setCalendarView] = useState("month")
   const [currentDate, setCurrentDate] = useState(new Date(2022, 3, 1)) // April 2022 to match the image
   const [selectedCategories, setSelectedCategories] = useState(calendarCategories.map((cat) => cat.id))
+  const {userName} = useParams()
+  const [user , setUser] = useState(null)
+  const [editFormData, setEditFormData] = useState({})
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await getUserName(userName)
+        console.log("User data fetched:", userName)
 
-  const [editFormData, setEditFormData] = useState({
-    fullName: employeeData.fullName,
-    email: employeeData.email,
-    telephone: employeeData.telephone,
-    position: employeeData.position,
-    bio: employeeData.bio,
-    address: employeeData.address,
-    status: employeeData.status,
-  })
-
+        setUser(data)
+        console.log("User data fetched:", data)
+      } catch (error) {
+        console.error("Failed to fetch user:", error)
+      }
+    }
+    fetchUser()
+  }, [userName])
   const getStatusColor = (status) => {
     switch (status) {
       case "ACTIVE":
@@ -468,6 +231,20 @@ export default function EmployeeDetail() {
     return days
   }
 
+  // if (!user) {
+  //     return (
+  //       <div className="flex items-center justify-center h-96">
+  //         <div className="text-center">
+  //           <h2 className="text-xl font-semibold mb-2">Không tìm thấy người dùng</h2>
+  //           <Button onClick={() => navigate('/app/users')}>
+  //             <ArrowLeft className="w-4 h-4 mr-2" />
+  //             Quay lại
+  //           </Button>
+  //         </div>
+  //       </div>
+  //     )
+  //   }
+  
   return (
   <div className="mx-auto p-0 w-full">
       {/* Header Section */}
@@ -477,31 +254,31 @@ export default function EmployeeDetail() {
             <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
               <div className="flex items-center gap-6">
                 <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-white shadow-lg">
-                  <AvatarImage src={employeeData.avatar || "/placeholder.svg"} alt={employeeData.fullName} />
-                  <AvatarFallback className="text-xl font-bold bg-primary text-primary-foreground">
-                    {employeeData.firstName[0]}
-                    {employeeData.lastName[0]}
-                  </AvatarFallback>
+                  <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user?.fullName || "avatar"} />
+                  {/* <AvatarFallback className="text-xl font-bold bg-primary text-primary-foreground">
+                    {user.firstName[0]}
+                    {user.lastName[0]}
+                  </AvatarFallback> */}
                 </Avatar>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <h1 className="text-2xl md:text-3xl font-bold text-foreground">{employeeData.fullName}</h1>
-                    <Badge className={`${getStatusColor(employeeData.status)} font-medium`}>
-                      {employeeData.status === "ACTIVE" ? "Đang hoạt động" : "Không hoạt động"}
+                    <h1 className="text-2xl md:text-3xl font-bold text-foreground">{user?.fullName}</h1>
+                    <Badge className={`${getStatusColor(user?.status)} font-medium`}>
+                      {user?.status === "ACTIVE" ? "Đang hoạt động" : "Không hoạt động"}
                     </Badge>
                   </div>
                   <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Briefcase className="h-4 w-4" />
-                      <span className="font-medium">{employeeData.position}</span>
+                      <span className="font-medium">{user?.position}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Building className="h-4 w-4" />
-                      <span>{employeeData.departmentName}</span>
+                      <span>{user?.departmentName}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
-                      <span>ID: {employeeData.id}</span>
+                      <span>ID: {user?.id}</span>
                     </div>
                   </div>
                 </div>
@@ -510,16 +287,16 @@ export default function EmployeeDetail() {
               <div className="flex-1 lg:text-right">
                 <div className="flex flex-col lg:items-end gap-3">
                   <div className="flex flex-wrap gap-2">
-                    {employeeData.userTeam.map((team) => (
+                    {user.userTeam.map((team) => (
                       <Badge key={team.id} variant="secondary" className="bg-accent/20 text-accent-foreground">
                         {team.teamName}
                       </Badge>
                     ))}
                   </div>
-                  <p className="text-muted-foreground max-w-md">{employeeData.bio}</p>
+                  <p className="text-muted-foreground max-w-md">{user.bio}</p>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
-                    <span>Cập nhật: {new Date(employeeData.updatedAt).toLocaleDateString("vi-VN")}</span>
+                    <span>Cập nhật: {new Date(user.updatedAt).toLocaleDateString("vi-VN")}</span>
                   </div>
                 </div>
               </div>

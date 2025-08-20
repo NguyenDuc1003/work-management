@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Search, Filter, MoreHorizontal, Mail, Phone, MapPin } from "lucide-react"
 import { Button } from "../components/ui/button"
@@ -8,27 +8,36 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 import { CreateEmployeeDialog } from "../components/create/CreateEmployeeDialog"
-
+import { getAllUser as fetchAllUsers } from "../services/UserService";
 export function EmployeeManagement() {
   const navigate = useNavigate();
-  const [employees, setEmployees] = useState([
-    { id: "1", name: "Nguyễn Văn A", email: "nguyenvana@takeit.com", phone: "0123456789", position: "Frontend Developer", department: "Công nghệ", team: "Frontend", avatar: "/placeholder.svg", status: "active", joinDate: "2023-01-15", tasksCompleted: 24, tasksInProgress: 3 },
-    { id: "2", name: "Trần Thị B", email: "tranthib@takeit.com", phone: "0123456790", position: "Backend Developer", department: "Công nghệ", team: "Backend", avatar: "/placeholder.svg", status: "active", joinDate: "2023-02-20", tasksCompleted: 31, tasksInProgress: 2 },
-    { id: "3", name: "Lê Văn C", email: "levanc@takeit.com", phone: "0123456791", position: "Content Writer", department: "Marketing", team: "Content", avatar: "/placeholder.svg", status: "active", joinDate: "2023-03-10", tasksCompleted: 18, tasksInProgress: 5 },
-    { id: "4", name: "Phạm Thị D", email: "phamthid@takeit.com", phone: "0123456792", position: "Mobile Developer", department: "Công nghệ", team: "Mobile", avatar: "/placeholder.svg", status: "inactive", joinDate: "2023-04-05", tasksCompleted: 12, tasksInProgress: 1 },
-  ])
+  const [employees, setEmployees] = useState([])
+
+
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const data = await fetchAllUsers();
+      setEmployees(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setEmployees([]);
+    }
+  };
+  fetchData();
+}, []);
 
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedDepartment, setSelectedDepartment] = useState("all")
 
-  const filteredEmployees = employees.filter((employee) => {
-    const matchesSearch =
-      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.position.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesDepartment = selectedDepartment === "all" || employee.department === selectedDepartment
-    return matchesSearch && matchesDepartment
-  })
+  // const filteredEmployees = employees.filter((employee) => {
+  //   const matchesSearch =
+  //     employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     employee.position.toLowerCase().includes(searchTerm.toLowerCase())
+  //   const matchesDepartment = selectedDepartment === "all" || employee.department === selectedDepartment
+  //   return matchesSearch && matchesDepartment
+  // })
 
   const getStatusColor = (status) => (status === "active" ? "bg-green-500" : "bg-gray-500")
   const getStatusText = (status) => (status === "active" ? "Đang làm việc" : "Nghỉ việc")
@@ -82,19 +91,20 @@ export function EmployeeManagement() {
 
       {/* Employee Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredEmployees.map((employee) => (
+        {employees.map((employee) => (
           <Card key={employee.id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <Avatar className="w-12 h-12">
                     <AvatarImage src={employee.avatar || "/placeholder.svg"} />
-                    <AvatarFallback>{employee.name.charAt(0)}</AvatarFallback>
+                    {/* <AvatarFallback>{employee?.userName.charAt(0)|| "avatar"}</AvatarFallback> */}
                   </Avatar>
                   <div>
-                    <CardTitle className="text-lg">{employee.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{employee.position}</p>
+                    <CardTitle className="text-lg">{employee.fullName}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{employee.role}</p>
                   </div>
+
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -103,7 +113,7 @@ export function EmployeeManagement() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleViewDetail(employee)}>
+                    <DropdownMenuItem  onClick={() => navigate(`/app/employees/${employee.userName}`)}>
                       Xem chi tiết
                     </DropdownMenuItem>
                     <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
@@ -126,12 +136,13 @@ export function EmployeeManagement() {
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Phone className="w-3 h-3" />
-                  <span>{employee.phone}</span>
+                  <span>{employee.telephone}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-3 h-3" />
+                  <span>{employee.address}</span>
                   <span>
-                    {employee.department} - {employee.team}
+                    {employee.departments} - {employee.teams}
                   </span>
                 </div>
               </div>
@@ -146,7 +157,7 @@ export function EmployeeManagement() {
                   <div className="text-xs text-muted-foreground">Đang làm</div>
                 </div>
                 <div className="text-center">
-                  <div className="font-semibold">{new Date(employee.joinDate).getFullYear()}</div>
+                  <div className="font-semibold">{new Date(employee.joindate).getFullYear()}</div>
                   <div className="text-xs text-muted-foreground">Năm vào</div>
                 </div>
               </div>
@@ -155,7 +166,7 @@ export function EmployeeManagement() {
         ))}
       </div>
 
-      {filteredEmployees.length === 0 && (
+      {employees .length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">Không tìm thấy nhân viên nào</p>
         </div>
